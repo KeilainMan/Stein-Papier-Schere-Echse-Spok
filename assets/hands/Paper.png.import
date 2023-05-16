@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Neutral_point.png-73cb4894229d8e9662702241ec00f33a.stex"
+path="res://.import/Paper.png-0f1f7a219517f7af66ebbbc9eb7a8ae7.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Neutral_point.png"
-dest_files=[ "res://.import/Neutral_point.png-73cb4894229d8e9662702241ec00f33a.stex" ]
+source_file="res://assets/hands/Paper.png"
+dest_files=[ "res://.import/Paper.png-0f1f7a219517f7af66ebbbc9eb7a8ae7.stex" ]
 
 [params]
 

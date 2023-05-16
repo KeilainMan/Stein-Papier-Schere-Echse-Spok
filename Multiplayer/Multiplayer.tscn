@@ -1,14 +1,16 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=17 format=2]
 
-[ext_resource path="res://icon.png" type="Texture" id=1]
-[ext_resource path="res://FIghtscene.gd" type="Script" id=2]
-[ext_resource path="res://Points_HUD.tscn" type="PackedScene" id=3]
-[ext_resource path="res://KellySlab-Regular.ttf" type="DynamicFontData" id=4]
-[ext_resource path="res://Lizard.png" type="Texture" id=5]
-[ext_resource path="res://Scissors.png" type="Texture" id=6]
-[ext_resource path="res://Stone.png" type="Texture" id=7]
-[ext_resource path="res://Spok.png" type="Texture" id=8]
-[ext_resource path="res://Paper.png" type="Texture" id=9]
+[ext_resource path="res://assets/hands/Lizard.png" type="Texture" id=1]
+[ext_resource path="res://assets/hands/Scissors.png" type="Texture" id=2]
+[ext_resource path="res://assets/hands/Stone.png" type="Texture" id=3]
+[ext_resource path="res://assets/icon.png" type="Texture" id=4]
+[ext_resource path="res://assets/hands/Spok.png" type="Texture" id=5]
+[ext_resource path="res://assets/hands/Paper.png" type="Texture" id=6]
+[ext_resource path="res://assets/hands/Fragezeichen.png" type="Texture" id=7]
+[ext_resource path="res://GridContainer.gd" type="Script" id=8]
+[ext_resource path="res://Multiplayer.gd" type="Script" id=9]
+[ext_resource path="res://Points_HUD.tscn" type="PackedScene" id=10]
+[ext_resource path="res://assets/fonts/KellySlab-Regular.ttf" type="DynamicFontData" id=11]
 
 [sub_resource type="Animation" id=1]
 length = 0.001
@@ -117,12 +119,16 @@ tracks/1/keys = {
 
 [sub_resource type="DynamicFont" id=4]
 size = 60
-font_data = ExtResource( 4 )
+font_data = ExtResource( 11 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 40
+font_data = ExtResource( 11 )
 
 [node name="Control" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource( 2 )
+script = ExtResource( 9 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -152,70 +158,67 @@ margin_left = 447.0
 margin_top = 508.0
 margin_right = 511.0
 margin_bottom = 572.0
-texture = ExtResource( 1 )
+rect_pivot_offset = Vector2( 125, 134.5 )
+texture = ExtResource( 4 )
 
 [node name="Schere" type="TextureRect" parent="Hbox/Cntr1"]
-modulate = Color( 1, 0.631373, 0.631373, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
-texture = ExtResource( 1 )
+margin_left = 292.0
+margin_top = 444.0
+margin_right = 665.0
+margin_bottom = 635.0
+texture = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Stein" type="TextureRect" parent="Hbox/Cntr1"]
-modulate = Color( 0.541176, 0.368627, 0.0352941, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
-texture = ExtResource( 1 )
+margin_left = 354.0
+margin_top = 405.0
+margin_right = 604.0
+margin_bottom = 674.0
+texture = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Papier" type="TextureRect" parent="Hbox/Cntr1"]
-modulate = Color( 0.529412, 0.509804, 0.509804, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
-texture = ExtResource( 1 )
+margin_left = 299.0
+margin_top = 439.0
+margin_right = 658.0
+margin_bottom = 640.0
+texture = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Echse" type="TextureRect" parent="Hbox/Cntr1"]
-modulate = Color( 0.0392157, 0.454902, 0.054902, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
+margin_left = 368.0
+margin_top = 388.0
+margin_right = 589.0
+margin_bottom = 691.0
 texture = ExtResource( 1 )
+flip_h = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Spok" type="TextureRect" parent="Hbox/Cntr1"]
-modulate = Color( 0.0901961, 0.27451, 0.898039, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
-texture = ExtResource( 1 )
+margin_left = 350.0
+margin_top = 368.0
+margin_right = 608.0
+margin_bottom = 712.0
+texture = ExtResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Fragezeichen1" type="TextureRect" parent="Hbox/Cntr1"]
 modulate = Color( 0.705882, 0.0392157, 0.0392157, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
-texture = ExtResource( 1 )
+margin_left = 350.0
+margin_top = 368.0
+margin_right = 608.0
+margin_bottom = 712.0
+texture = ExtResource( 7 )
 
 [node name="Cntr2" type="CenterContainer" parent="Hbox"]
 margin_left = 962.0
@@ -228,70 +231,72 @@ margin_left = 447.0
 margin_top = 508.0
 margin_right = 511.0
 margin_bottom = 572.0
-texture = ExtResource( 1 )
+rect_pivot_offset = Vector2( 125, 134.5 )
+texture = ExtResource( 4 )
+stretch_mode = 4
+flip_h = true
 
 [node name="ESchere" type="TextureRect" parent="Hbox/Cntr2"]
-modulate = Color( 1, 0.631373, 0.631373, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
-texture = ExtResource( 1 )
+margin_left = 292.0
+margin_top = 444.0
+margin_right = 665.0
+margin_bottom = 635.0
+texture = ExtResource( 2 )
+flip_h = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="EStein" type="TextureRect" parent="Hbox/Cntr2"]
-modulate = Color( 0.541176, 0.368627, 0.0352941, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
-texture = ExtResource( 1 )
+margin_left = 354.0
+margin_top = 405.0
+margin_right = 604.0
+margin_bottom = 674.0
+texture = ExtResource( 3 )
+flip_h = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="EPapier" type="TextureRect" parent="Hbox/Cntr2"]
-modulate = Color( 0.529412, 0.509804, 0.509804, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
-texture = ExtResource( 1 )
+margin_left = 299.0
+margin_top = 439.0
+margin_right = 658.0
+margin_bottom = 640.0
+texture = ExtResource( 6 )
+flip_h = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="EEchse" type="TextureRect" parent="Hbox/Cntr2"]
-modulate = Color( 0.0392157, 0.454902, 0.054902, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
+margin_left = 368.0
+margin_top = 388.0
+margin_right = 589.0
+margin_bottom = 691.0
 texture = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ESpok" type="TextureRect" parent="Hbox/Cntr2"]
-modulate = Color( 0.0901961, 0.27451, 0.898039, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
-texture = ExtResource( 1 )
+margin_left = 350.0
+margin_top = 368.0
+margin_right = 608.0
+margin_bottom = 712.0
+texture = ExtResource( 5 )
+flip_h = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Fragezeichen2" type="TextureRect" parent="Hbox/Cntr2"]
 modulate = Color( 0.705882, 0.0392157, 0.0392157, 1 )
-margin_left = 447.0
-margin_top = 508.0
-margin_right = 511.0
-margin_bottom = 572.0
-texture = ExtResource( 1 )
+margin_left = 350.0
+margin_top = 368.0
+margin_right = 608.0
+margin_bottom = 712.0
+texture = ExtResource( 7 )
 
 [node name="Revealtimer" type="Timer" parent="."]
 wait_time = 3.0
@@ -314,24 +319,21 @@ margin_left = 165.0
 margin_top = 78.0
 margin_right = 792.0
 margin_bottom = 1002.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 columns = 2
+script = ExtResource( 8 )
 
-[node name="MarginContainer" type="MarginContainer" parent="player_selection/cntr1/GridContainer"]
+[node name="ASchere" type="TextureRect" parent="player_selection/cntr1/GridContainer"]
 margin_right = 373.0
 margin_bottom = 269.0
-size_flags_horizontal = 13
-size_flags_vertical = 13
-
-[node name="ASchere" type="TextureRect" parent="player_selection/cntr1/GridContainer/MarginContainer"]
-margin_right = 373.0
-margin_bottom = 269.0
-texture = ExtResource( 6 )
-stretch_mode = 6
+texture = ExtResource( 2 )
+stretch_mode = 4
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ASchere" type="Button" parent="player_selection/cntr1/GridContainer/MarginContainer/ASchere"]
+[node name="ASchere" type="Button" parent="player_selection/cntr1/GridContainer/ASchere"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 3
@@ -345,7 +347,8 @@ __meta__ = {
 margin_left = 377.0
 margin_right = 627.0
 margin_bottom = 269.0
-texture = ExtResource( 7 )
+texture = ExtResource( 3 )
+stretch_mode = 4
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -364,7 +367,8 @@ __meta__ = {
 margin_top = 273.0
 margin_right = 373.0
 margin_bottom = 576.0
-texture = ExtResource( 9 )
+texture = ExtResource( 6 )
+stretch_mode = 4
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -384,7 +388,8 @@ margin_left = 377.0
 margin_top = 273.0
 margin_right = 627.0
 margin_bottom = 576.0
-texture = ExtResource( 5 )
+texture = ExtResource( 1 )
+stretch_mode = 4
 flip_h = true
 __meta__ = {
 "_edit_use_anchors_": false
@@ -404,7 +409,8 @@ __meta__ = {
 margin_top = 580.0
 margin_right = 373.0
 margin_bottom = 924.0
-texture = ExtResource( 8 )
+texture = ExtResource( 5 )
+stretch_mode = 4
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -425,7 +431,7 @@ margin_right = 1920.0
 margin_bottom = 1080.0
 size_flags_horizontal = 3
 
-[node name="Control" parent="." instance=ExtResource( 3 )]
+[node name="Control" parent="." instance=ExtResource( 10 )]
 mouse_filter = 2
 
 [node name="Start_game" type="Button" parent="."]
@@ -487,13 +493,85 @@ __meta__ = {
 [node name="Checktimer" type="Timer" parent="."]
 wait_time = 0.1
 
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -49.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Player_1_Name" type="Label" parent="HBoxContainer"]
+margin_right = 637.0
+margin_bottom = 49.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_fonts/font = SubResource( 5 )
+valign = 1
+
+[node name="vs" type="Label" parent="HBoxContainer"]
+margin_left = 641.0
+margin_right = 1278.0
+margin_bottom = 49.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_fonts/font = SubResource( 5 )
+text = "vs."
+align = 1
+valign = 1
+
+[node name="Player_2_Name" type="Label" parent="HBoxContainer"]
+margin_left = 1282.0
+margin_right = 1920.0
+margin_bottom = 49.0
+size_flags_horizontal = 3
+size_flags_vertical = 6
+custom_fonts/font = SubResource( 5 )
+align = 2
+valign = 1
+
+[node name="Waiting_for_Player" type="Label" parent="."]
+margin_left = 39.0
+margin_top = 37.0
+margin_right = 773.0
+margin_bottom = 119.0
+custom_fonts/font = SubResource( 5 )
+text = "Waiting for Player..."
+
+[node name="waitingforPlayerTimer" type="Timer" parent="."]
+wait_time = 0.3
+
+[node name="GameReadyTimer" type="Timer" parent="."]
+wait_time = 0.1
+
+[node name="GameReadyLabel" type="Label" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -59.0
+margin_top = 52.0
+margin_right = 57.0
+margin_bottom = 111.0
+custom_fonts/font = SubResource( 5 )
+text = "(1/2...)"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [connection signal="timeout" from="Revealtimer" to="." method="_on_Revealtimer_timeout"]
-[connection signal="pressed" from="player_selection/cntr1/GridContainer/MarginContainer/ASchere/ASchere" to="." method="_on_ASchere_pressed"]
+[connection signal="pressed" from="player_selection/cntr1/GridContainer/ASchere/ASchere" to="." method="_on_ASchere_pressed"]
 [connection signal="pressed" from="player_selection/cntr1/GridContainer/AStein/AStein" to="." method="_on_AStein_pressed"]
 [connection signal="pressed" from="player_selection/cntr1/GridContainer/APapier/APapier" to="." method="_on_APapier_pressed"]
 [connection signal="pressed" from="player_selection/cntr1/GridContainer/AEchse/AEchse" to="." method="_on_AEchse_pressed"]
 [connection signal="pressed" from="player_selection/cntr1/GridContainer/ASpok/ASpok" to="." method="_on_ASpok_pressed"]
 [connection signal="pressed" from="Start_game" to="." method="_on_Start_game_pressed"]
 [connection signal="pressed" from="NextRound" to="." method="_on_NextRound_pressed"]
+[connection signal="timeout" from="Checktimer" to="." method="_on_Checktimer_timeout"]
+[connection signal="timeout" from="waitingforPlayerTimer" to="." method="_on_waitingforPlayerTimer_timeout"]
+[connection signal="timeout" from="GameReadyTimer" to="." method="_on_GameReadyTimer_timeout"]
 
 [editable path="Control"]

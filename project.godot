@@ -11,8 +11,8 @@ config_version=4
 [application]
 
 config/name="Stein, Papier, Schere, Echse, Spok"
-run/main_scene="res://GUI.tscn"
-config/icon="res://icon.png"
+run/main_scene="res://MainMenu/MainMenu.tscn"
+config/icon="res://assets/icon.png"
 
 [autoload]
 

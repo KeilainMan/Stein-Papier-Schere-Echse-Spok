@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/won_point.png-e27ebe049d7dfc33801c61ae7f504ea8.stex"
+path="res://.import/Fragezeichen.png-40db8e7be1906ba82494a2d2d99590ba.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://won_point.png"
-dest_files=[ "res://.import/won_point.png-e27ebe049d7dfc33801c61ae7f504ea8.stex" ]
+source_file="res://assets/hands/Fragezeichen.png"
+dest_files=[ "res://.import/Fragezeichen.png-40db8e7be1906ba82494a2d2d99590ba.stex" ]
 
 [params]
 

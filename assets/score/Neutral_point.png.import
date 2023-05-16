@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Lizard.png-6e729186a6c78d2496017f310570b33d.stex"
+path="res://.import/Neutral_point.png-6ff17bf098603b85283d952d25d3e393.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Lizard.png"
-dest_files=[ "res://.import/Lizard.png-6e729186a6c78d2496017f310570b33d.stex" ]
+source_file="res://assets/score/Neutral_point.png"
+dest_files=[ "res://.import/Neutral_point.png-6ff17bf098603b85283d952d25d3e393.stex" ]
 
 [params]
 

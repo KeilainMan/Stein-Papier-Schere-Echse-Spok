@@ -187,7 +187,7 @@ func on_player_wins():
 func add_win_player():
 	var position = get_node("Control/1a/2a/Playerpoints")
 	var point = TextureRect.new()
-	point.set_texture(load("res://won_point.png"))
+	point.set_texture(load("res://assets/score/won_point.png"))
 	position.add_child(point, player_win_counter)
 	player_win_counter += 1
 	emit_signal("end_game")
@@ -195,7 +195,7 @@ func add_win_player():
 func add_loose_enemy():
 	var position = get_node("Control/1a/2b/Enemypoints")
 	var point = TextureRect.new()
-	point.set_texture(load("res://lost_point.png"))
+	point.set_texture(load("res://assets/score/lost_point.png"))
 	position.add_child(point, enemy_loose_counter)
 	enemy_loose_counter += 1
 	
@@ -209,14 +209,14 @@ func on_enemy_wins():
 func add_player_loose():
 	var position = get_node("Control/1a/2a/Playerpoints")
 	var point = TextureRect.new()
-	point.set_texture(load("res://lost_point.png"))
+	point.set_texture(load("res://assets/score/lost_point.png"))
 	position.add_child(point, player_loose_counter)
 	player_loose_counter += 1
 	
 func add_enemy_win():
 	var position = get_node("Control/1a/2b/Enemypoints")
 	var point = TextureRect.new()
-	point.set_texture(load("res://won_point.png"))
+	point.set_texture(load("res://assets/score/won_point.png"))
 	position.add_child(point, enemy_win_counter)
 	enemy_win_counter += 1
 	emit_signal("end_game")

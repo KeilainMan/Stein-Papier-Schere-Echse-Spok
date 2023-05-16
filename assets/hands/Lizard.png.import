@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Spok.png-f967c9678168de6fad96d1932612eb3e.stex"
+path="res://.import/Lizard.png-65e854212fafe9ca143a315500e9c783.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Spok.png"
-dest_files=[ "res://.import/Spok.png-f967c9678168de6fad96d1932612eb3e.stex" ]
+source_file="res://assets/hands/Lizard.png"
+dest_files=[ "res://.import/Lizard.png-65e854212fafe9ca143a315500e9c783.stex" ]
 
 [params]
 

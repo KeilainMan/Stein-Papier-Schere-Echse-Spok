@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/lost_point.png-3044fa7f9b99e1227193dd908d0afe8d.stex"
+path="res://.import/lost_point.png-f87b8bbd774b0bf4dfc328754bfc6d62.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://lost_point.png"
-dest_files=[ "res://.import/lost_point.png-3044fa7f9b99e1227193dd908d0afe8d.stex" ]
+source_file="res://assets/score/lost_point.png"
+dest_files=[ "res://.import/lost_point.png-f87b8bbd774b0bf4dfc328754bfc6d62.stex" ]
 
 [params]
 

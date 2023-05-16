@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Scissors.png-87a603c9c1e2ae1188d933289d5e812d.stex"
+path="res://.import/won_point.png-ac2de874ecd0e2f725ba742eb10beb44.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Scissors.png"
-dest_files=[ "res://.import/Scissors.png-87a603c9c1e2ae1188d933289d5e812d.stex" ]
+source_file="res://assets/score/won_point.png"
+dest_files=[ "res://.import/won_point.png-ac2de874ecd0e2f725ba742eb10beb44.stex" ]
 
 [params]
 

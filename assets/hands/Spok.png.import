@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/Fragezeichen.png-f1a90a622ad4b588bdbab5484f154da1.stex"
+path="res://.import/Spok.png-a5f4a3180648371c85bd3acaebaadeb9.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Fragezeichen.png"
-dest_files=[ "res://.import/Fragezeichen.png-f1a90a622ad4b588bdbab5484f154da1.stex" ]
+source_file="res://assets/hands/Spok.png"
+dest_files=[ "res://.import/Spok.png-a5f4a3180648371c85bd3acaebaadeb9.stex" ]
 
 [params]
 
