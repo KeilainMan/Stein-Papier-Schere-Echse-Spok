@@ -1,0 +1,38 @@
+[gd_scene format=2]
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="1a" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+margin_bottom = 200.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="2a" type="CenterContainer" parent="1a"]
+margin_right = 958.0
+margin_bottom = 200.0
+size_flags_horizontal = 3
+
+[node name="Playerpoints" type="HBoxContainer" parent="1a/2a"]
+margin_left = 479.0
+margin_top = 100.0
+margin_right = 479.0
+margin_bottom = 100.0
+
+[node name="2b" type="CenterContainer" parent="1a"]
+margin_left = 962.0
+margin_right = 1920.0
+margin_bottom = 200.0
+size_flags_horizontal = 3
+
+[node name="Enemypoints" type="HBoxContainer" parent="1a/2b"]
+margin_left = 479.0
+margin_top = 100.0
+margin_right = 479.0
+margin_bottom = 100.0
