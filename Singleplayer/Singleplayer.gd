@@ -1,5 +1,7 @@
 extends Node
 
+onready var scissors_hand_scene: PackedScene = preload("res://Hands/Scissors.tscn")
+
 
 var scissors := 1
 var stone := 2
@@ -32,6 +34,11 @@ func _ready():
 	connect("stalemate", self, "on_stalemate")
 	connect("end_game", self, "on_end_game")
 	
+	var new_hand = scissors_hand_scene.instance()
+	new_hand.position = get_viewport().size/2
+	add_child(new_hand)
+
+
 func hide_ui():
 	$Hbox/Cntr1/LinkeFaust.hide()
 	$Hbox/Cntr2/RechteFaust.hide()
