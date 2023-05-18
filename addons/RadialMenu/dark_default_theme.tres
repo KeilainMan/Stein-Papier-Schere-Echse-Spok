@@ -1,0 +1,8 @@
+[gd_resource type="Theme" load_steps=2 format=2]
+
+[ext_resource path="res://addons/RadialMenu/icons/InterpLinear.svg" type="Texture" id=1]
+
+[resource]
+RadialMenu/colors/Background = Color( 0, 0, 0, 0.901961 )
+RadialMenu/colors/Stroke = Color( 0.25098, 0.25098, 0.25098, 0.784314 )
+RadialMenu/icons/Expand = ExtResource( 1 )

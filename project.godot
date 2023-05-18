@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Node2D",
+"class": "BaseHand",
+"language": "GDScript",
+"path": "res://Hands/Basehand.gd"
+} ]
+_global_script_class_icons={
+"BaseHand": ""
+}
+
 [application]
 
 config/name="Stein, Papier, Schere, Echse, Spok"
@@ -17,11 +27,16 @@ config/icon="res://assets/icon.png"
 [autoload]
 
 Server="*res://Server.gd"
+Signals="*res://Globals/Signals.gd"
 
 [display]
 
 window/size/width=1920
 window/size/height=1080
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/RadialMenu/plugin.cfg" )
 
 [physics]
 
