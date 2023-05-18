@@ -8,8 +8,8 @@
 [ext_resource path="res://assets/hands/Paper.png" type="Texture" id=6]
 [ext_resource path="res://assets/hands/Fragezeichen.png" type="Texture" id=7]
 [ext_resource path="res://GridContainer.gd" type="Script" id=8]
-[ext_resource path="res://Multiplayer.gd" type="Script" id=9]
-[ext_resource path="res://Points_HUD.tscn" type="PackedScene" id=10]
+[ext_resource path="res://Multiplayer/Multiplayer.gd" type="Script" id=9]
+[ext_resource path="res://HeadUpDisplay/PointsHeadUpDisplay.tscn" type="PackedScene" id=10]
 [ext_resource path="res://assets/fonts/KellySlab-Regular.ttf" type="DynamicFontData" id=11]
 
 [sub_resource type="Animation" id=1]

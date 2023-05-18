@@ -27,11 +27,16 @@ config/icon="res://assets/icon.png"
 [autoload]
 
 Server="*res://Server.gd"
+Signals="*res://Globals/Signals.gd"
 
 [display]
 
 window/size/width=1920
 window/size/height=1080
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/RadialMenu/plugin.cfg" )
 
 [physics]
 
