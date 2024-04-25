@@ -14,7 +14,7 @@ var player_win_counter: int = 0
 func _ready():
 	Signals.connect("player_wins", self, "_on_player_wins")
 	Signals.connect("bot_wins", self, "_on_bot_wins")
-	Signals.connect("stalemate", self, "_on_stalemate")
+	Signals.connect("draw", self, "_on_draw")
 	Signals.connect("new_round_initiated", self, "_on_new_round_initiated")
 	
 	
@@ -34,7 +34,7 @@ func _on_bot_wins() -> void:
 		Signals.emit_signal("game_over", "BOT")
 
 
-func _on_stalemate() -> void:
+func _on_draw() -> void:
 	instance_new_point(stalemate_point, true)
 	instance_new_point(stalemate_point, false)
 

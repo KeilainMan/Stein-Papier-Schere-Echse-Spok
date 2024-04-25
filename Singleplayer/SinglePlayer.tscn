@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Singleplayer/Singleplayer.gd" type="Script" id=1]
 [ext_resource path="res://HeadUpDisplay/PointsHeadUpDisplay.tscn" type="PackedScene" id=2]
 [ext_resource path="res://assets/fonts/KellySlab-Regular.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://addons/RadialMenu/RadialMenu.gd" type="Script" id=4]
 [ext_resource path="res://addons/RadialMenu/light_default_theme.tres" type="Theme" id=5]
+[ext_resource path="res://UI/Help.tscn" type="PackedScene" id=6]
 
 [sub_resource type="DynamicFont" id=4]
 size = 60
@@ -25,7 +26,6 @@ one_shot = true
 layer = 0
 
 [node name="Control" parent="PointDisplay" instance=ExtResource( 2 )]
-mouse_filter = 2
 
 [node name="PostRoundDisplay" type="CanvasLayer" parent="."]
 layer = 0
@@ -104,14 +104,17 @@ rect_min_size = Vector2( 600, 600 )
 rect_pivot_offset = Vector2( 300, 300 )
 size_flags_horizontal = 0
 size_flags_vertical = 0
+popup_exclusive = true
 script = ExtResource( 4 )
 radius = 300
 width = 200
 center_radius = 100
 circle_coverage = 1.0
 center_angle = -1.5
-icon_scale = 0.5
+icon_scale = 0.4
 default_theme = ExtResource( 5 )
+
+[node name="CanvasLayer" parent="PlayerHandMenu" instance=ExtResource( 6 )]
 
 [node name="Disposable" type="Node" parent="."]
 
