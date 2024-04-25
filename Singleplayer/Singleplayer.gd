@@ -43,8 +43,8 @@ var enemy_possibilities: Array = [
 ]
 
 var player_hand_menu_items = [
-		{'texture': STONE_ICON, 'title': "Stone", 'id': hands.STONE}, 
 		{'texture': SCISSORS_ICON, 'title': "Scissors", 'id': hands.SCISSORS},
+		{'texture': STONE_ICON, 'title': "Stone", 'id': hands.STONE}, 
 		{'texture': PAPER_ICON, 'title': "Paper", 'id': hands.PAPER},
 		{'texture': LIZARD_ICON, 'title': "Lizard", 'id': hands.LIZARD},
 		{'texture': SPOCK_ICON, 'title': "Spock", 'id': hands.SPOCK},
@@ -63,7 +63,7 @@ func _ready():
 
 	Signals.connect("player_wins", self, "_on_player_wins")
 	Signals.connect("bot_wins", self, "_on_bot_wins")
-	Signals.connect("stalemate", self, "_on_stalemate")
+	Signals.connect("draw", self, "_on_draw")
 	Signals.connect("game_over", self, "_on_game_over")
 
 	start_new_small_round()
@@ -165,7 +165,7 @@ func _on_PostRevealTimer_timeout() -> void:
 func check_who_won() -> void:
 	if current_player_hand == hands.SCISSORS:
 		if current_bot_hand == hands.SCISSORS:
-			Signals.emit_signal("stalemate")
+			Signals.emit_signal("draw")
 		elif current_bot_hand == hands.STONE or current_bot_hand == hands.SPOCK:
 			Signals.emit_signal("bot_wins")
 		elif current_bot_hand == hands.PAPER or current_bot_hand == hands.LIZARD:
@@ -175,7 +175,7 @@ func check_who_won() -> void:
 		if current_bot_hand == hands.SCISSORS or current_bot_hand == hands.LIZARD:
 			Signals.emit_signal("player_wins")
 		elif current_bot_hand == hands.STONE:
-			Signals.emit_signal("stalemate")
+			Signals.emit_signal("draw")
 		elif current_bot_hand == hands.PAPER or current_bot_hand == hands.SPOCK:
 			Signals.emit_signal("bot_wins")
 	
@@ -185,7 +185,7 @@ func check_who_won() -> void:
 		elif current_bot_hand == hands.SCISSORS or current_bot_hand == hands.LIZARD:
 			Signals.emit_signal("bot_wins")
 		elif current_bot_hand == hands.PAPER:
-			Signals.emit_signal("stalemate")
+			Signals.emit_signal("draw")
 	
 	if current_player_hand == hands.LIZARD:
 		if current_bot_hand == hands.PAPER or current_bot_hand == hands.SPOCK:
@@ -193,7 +193,7 @@ func check_who_won() -> void:
 		elif current_bot_hand == hands.SCISSORS or current_bot_hand == hands.STONE:
 			Signals.emit_signal("bot_wins")
 		elif current_bot_hand == hands.LIZARD:
-			Signals.emit_signal("stalemate")
+			Signals.emit_signal("draw")
 	
 	if current_player_hand == hands.SPOCK:
 		if current_bot_hand == hands.SCISSORS or current_bot_hand == hands.STONE:
@@ -201,20 +201,22 @@ func check_who_won() -> void:
 		elif current_bot_hand == hands.PAPER or current_bot_hand == hands.LIZARD:
 			Signals.emit_signal("bot_wins")
 		elif current_bot_hand == hands.SPOCK:
-			Signals.emit_signal("stalemate")
+			Signals.emit_signal("draw")
 
 
 func _on_player_wins() -> void:
+	print("player wins")
 	instance_confetti(Vector2(get_viewport().size.x/4, 0))
 	next_small_round_button.show()
 
 
 func _on_bot_wins() -> void:
+	print("bot wins")
 	instance_confetti(Vector2(get_viewport().size.x * 3/4, 0))
 	next_small_round_button.show()
 
 
-func _on_stalemate() -> void:
+func _on_draw() -> void:
 	next_small_round_button.show()
 
 

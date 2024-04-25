@@ -3,7 +3,7 @@ extends Popup
 """
 (c) 2021 Pascal Schuppli
 
-This code is made available under the MIT license. See the LICENSE file for 
+This code is made available under the MIT license. See the LICENSE file for
 further information.
 """
 
@@ -60,12 +60,12 @@ var item_angle = PI/6 setget _set_item_angle
 # default menu itemsmn
 var menu_items = [
 	{ 'texture': STAR_TEXTURE, 'title': 'Item1', 'id': 'arc_id1'},
-	{ 'texture': STAR_TEXTURE, 'title': 'Item2', 'id': 'arc_id2'},	
-	{ 'texture': STAR_TEXTURE, 'title': 'Item3', 'id': 'arc_id3'},	
-	{ 'texture': STAR_TEXTURE, 'title': 'Item4', 'id': 'arc_id4'},	
-	{ 'texture': STAR_TEXTURE, 'title': 'Item5', 'id': 'arc_id5'},	
-	{ 'texture': STAR_TEXTURE, 'title': 'Item6', 'id': 'arc_id6'},	
-	{ 'texture': STAR_TEXTURE, 'title': 'Item7', 'id': 'arc_id7'},	
+	{ 'texture': STAR_TEXTURE, 'title': 'Item2', 'id': 'arc_id2'},
+	{ 'texture': STAR_TEXTURE, 'title': 'Item3', 'id': 'arc_id3'},
+	{ 'texture': STAR_TEXTURE, 'title': 'Item4', 'id': 'arc_id4'},
+	{ 'texture': STAR_TEXTURE, 'title': 'Item5', 'id': 'arc_id5'},
+	{ 'texture': STAR_TEXTURE, 'title': 'Item6', 'id': 'arc_id6'},
+	{ 'texture': STAR_TEXTURE, 'title': 'Item7', 'id': 'arc_id7'},
 ] setget set_items
 
 # mostly used for animation
@@ -77,9 +77,10 @@ var gamepad_axis_x = 0
 var gamepad_axis_y = 1
 var gamepad_deadzone = JOY_DEADZONE
 
+var hovered = false
 var ready = false
 var _item_children_present := false
-var has_left_center = false				
+var has_left_center = false
 var is_submenu = false					# true for submenus
 var selected = -1						# currently selected menu item
 var state = MenuState.closed			# state of the menu
@@ -93,27 +94,27 @@ var active_submenu_idx = -1
 
 func _set_radius(new_radius):
 	radius = new_radius
-	_calc_new_geometry()	
+	_calc_new_geometry()
 	update()
 	
 func _set_width(new_width):
 	width = new_width
-	_calc_new_geometry()	
+	_calc_new_geometry()
 	update()
 
 func _set_center_radius(new_radius):
-	center_radius = new_radius	
+	center_radius = new_radius
 	update()
 
 
 func _set_selector_position(new_position):
 	selector_position = new_position
-	_calc_new_geometry()	
+	_calc_new_geometry()
 	update()
 	
 func _set_icon_scale(new_scale : float):
 	icon_scale = new_scale
-	_update_item_icons()	
+	_update_item_icons()
 	update()
 
 func _set_item_angle(new_angle: float):
@@ -121,10 +122,10 @@ func _set_item_angle(new_angle: float):
 	_calc_new_geometry()
 	update()
 
-func _set_circle_coverage(new_coverage: float):	
+func _set_circle_coverage(new_coverage: float):
 	item_angle = new_coverage * 2 * PI / menu_items.size()
 	circle_coverage = new_coverage
-	_calc_new_geometry()	
+	_calc_new_geometry()
 	update()
 
 		
@@ -136,15 +137,15 @@ func _set_center_angle(new_angle: float):
 	
 func _set_decorator_ring_position(new_pos):
 	decorator_ring_position = new_pos
-	_calc_new_geometry()	
+	_calc_new_geometry()
 	update()
 	
 
-func _calc_new_geometry():	
+func _calc_new_geometry():
 	var n = menu_items.size()
-	var angle = circle_coverage * 2.0 * PI / menu_items.size()	
+	var angle = circle_coverage * 2.0 * PI / menu_items.size()
 	var sa = center_angle - 0.5 * n * angle
-	var aabb = Draw.calc_ring_segment_AABB(radius-get_total_ring_width(), radius, sa, sa + n*angle)		
+	var aabb = Draw.calc_ring_segment_AABB(radius-get_total_ring_width(), radius, sa, sa + n*angle)
 	rect_min_size = aabb.size
 	rect_size = rect_min_size
 	rect_pivot_offset = -aabb.position
@@ -167,24 +168,40 @@ func _create_subtree():
 		tween.connect("tween_all_completed", self, "_on_Tween_tween_all_completed")
 
 			
-func _ready():		
+func _ready():
 	ready = true
-	item_angle = circle_coverage * 2.0 * PI / menu_items.size()	
+	item_angle = circle_coverage * 2.0 * PI / menu_items.size()
 	_create_subtree()
 	if not is_submenu:
 		# (submenus get their signals connected and disconnected elsewhere)
 		connect("about_to_show", self, "_about_to_show")
 		connect("visibility_changed", self, "_on_visibility_changed")
+		connect("mouse_entered", self, "_on_mouse_entered")
+		connect("mouse_exited", self, "_on_mouse_exited")
+		connect("cancelled", self, "_on_cancelled")
 	_register_menu_child_nodes()
 	_calc_new_geometry()
 	size_flags_horizontal = 0
 	size_flags_vertical = 0
 	
 
+func _on_mouse_entered() -> void:
+	hovered = true
+
+
+func _on_mouse_exited() -> void:
+	hovered = false
+
+
+func _on_cancelled() -> void:
+	pass
+
 func _input(event):
 	_radial_input(event)
 	
 func _radial_input(event):
+	if !hovered:
+		return
 	if not visible:
 		return
 	if state == MenuState.opening or state == MenuState.closing:
@@ -201,8 +218,10 @@ func _radial_input(event):
 		return
 	
 	if event is InputEventMouseButton:
-		_handle_mouse_buttons(event)		
+		print("Mousebuttonevent")
+		_handle_mouse_buttons(event)
 	else:
+		print("ELSE")
 		_handle_actions(event)
 
 
@@ -214,16 +233,18 @@ func is_wheel_button(event):
 func _handle_mouse_buttons(event):
 	if event.is_pressed():
 		if event.button_index == BUTTON_WHEEL_DOWN:
-			select_next()				
+			select_next()
 		elif event.button_index == BUTTON_WHEEL_UP:
 			select_prev()
 		else:
-			if not is_submenu:					
-				get_tree().set_input_as_handled()				
-			activate_selected()											
+			if not is_submenu:
+				print("SUBMENU")
+				#pass
+				#get_tree().set_input_as_handled()
+			activate_selected()
 	elif state == MenuState.open and not is_wheel_button(event):
-		var msecs_since_opened = OS.get_ticks_msec() - msecs_at_opened			
-		if msecs_since_opened > MOUSE_RELEASE_TIMEOUT:				
+		var msecs_since_opened = OS.get_ticks_msec() - msecs_at_opened
+		if msecs_since_opened > MOUSE_RELEASE_TIMEOUT:
 			get_tree().set_input_as_handled()
 			activate_selected()
 	
@@ -232,7 +253,7 @@ func _handle_actions(event):
 	if event.is_action_pressed("ui_cancel"):
 		get_tree().set_input_as_handled()
 		selected = -1
-		activate_selected()		
+		activate_selected()
 	elif event.is_action_pressed("ui_down") or event.is_action_pressed("ui_right") or event.is_action_pressed("ui_focus_next"):
 		select_next()
 		get_tree().set_input_as_handled()
@@ -245,7 +266,7 @@ func _handle_actions(event):
 
 	
 func _draw():
-	var count = menu_items.size()	
+	var count = menu_items.size()
 	if item_angle*count > 2*PI:
 		item_angle = 2*PI/count
 					
@@ -256,9 +277,9 @@ func _draw():
 	var outer = inout[1]
 	
 	# Draw the background for each menu item
-	for i in range(count):	
+	for i in range(count):
 		var coords = Draw.calc_ring_segment(inner, outer, start_angle+i*item_angle, start_angle+(i+1)*item_angle, center_offset)
-		if i == selected: 
+		if i == selected:
 			Draw.draw_ring_segment(self, coords, _get_color("Selected Background"), _get_color("Selected Stroke"), 0.5, true)
 		else:
 			Draw.draw_ring_segment(self, coords, _get_color("Background"), _get_color("Stroke"), 0.5, true)
@@ -266,7 +287,7 @@ func _draw():
 	# draw decorator ring segment
 	if decorator_ring_position == Position.outside:
 		var rw = _get_constant("Decorator Ring Width")
-		var coords = Draw.calc_ring_segment(outer, outer + rw, start_angle, start_angle+count*item_angle, center_offset)		
+		var coords = Draw.calc_ring_segment(outer, outer + rw, start_angle, start_angle+count*item_angle, center_offset)
 		Draw.draw_ring_segment(self, coords, _get_color("Ring Background"), null, 0, true)
 	elif decorator_ring_position == Position.inside:
 		var rw = _get_constant("Decorator Ring Width")
@@ -275,14 +296,14 @@ func _draw():
 		
 	# draw selection ring segment
 	if selected != -1 and not has_open_submenu():
-		var selector_size = _get_constant("Selector Segment Width")		
+		var selector_size = _get_constant("Selector Segment Width")
 		var select_coords
 		if selector_position == Position.outside:
-			select_coords = Draw.calc_ring_segment(outer, outer+selector_size, start_angle+selected*item_angle, start_angle+(selected+1)*item_angle, center_offset)			
-			Draw.draw_ring_segment(self, select_coords, _get_color("Selector Segment"), null, 0, true)	
+			select_coords = Draw.calc_ring_segment(outer, outer+selector_size, start_angle+selected*item_angle, start_angle+(selected+1)*item_angle, center_offset)
+			Draw.draw_ring_segment(self, select_coords, _get_color("Selector Segment"), null, 0, true)
 		elif selector_position == Position.inside:
 			select_coords = Draw.calc_ring_segment(inner-selector_size, inner, start_angle+selected*item_angle, start_angle+(selected+1)*item_angle, center_offset)
-			Draw.draw_ring_segment(self, select_coords, _get_color("Selector Segment"), null, 0, true)	
+			Draw.draw_ring_segment(self, select_coords, _get_color("Selector Segment"), null, 0, true)
 
 	if center_radius != 0:
 		_draw_center()
@@ -293,7 +314,7 @@ func _draw_center():
 		return
 	var bg = _get_color("Center Background")
 	var fg = _get_color("Center Stroke")
-	if selected == -1:		
+	if selected == -1:
 		fg = _get_color("Selector Segment")
 	var tex = CLOSE_TEXTURE
 	if active_submenu_idx != -1:
@@ -315,7 +336,7 @@ func get_selected_by_mouse():
 	(or -1 when nothing is selected)
 	"""
 	
-	if has_open_submenu():		
+	if has_open_submenu():
 		if get_open_submenu().get_selected_by_mouse() != -1:
 			# we don't change the selection while a submenu has a valid selection
 			return active_submenu_idx
@@ -347,7 +368,7 @@ func get_selected_by_joypad():
 	if abs(xAxis) > gamepad_deadzone:
 		if xAxis > 0:
 			xAxis = (xAxis - gamepad_deadzone) * JOY_AXIS_RESCALE
-		else:	
+		else:
 			xAxis = (xAxis + gamepad_deadzone) * JOY_AXIS_RESCALE
 	else:
 		xAxis = 0
@@ -359,9 +380,9 @@ func get_selected_by_joypad():
 	else:
 		yAxis = 0
 	
-	var jpos = Vector2(xAxis, yAxis)	
+	var jpos = Vector2(xAxis, yAxis)
 	var s = selected
-	if jpos.length_squared() > 0.36:	
+	if jpos.length_squared() > 0.36:
 		has_left_center = true
 		s = get_itemindex_from_vector(jpos)
 		if s == -1:
@@ -401,7 +422,7 @@ func select_prev():
 	var n = menu_items.size()
 	if 2*PI - n*item_angle < 0.01 or selected > 0:
 		set_selected_item(int(fposmod(selected-1, n)))
-		has_left_center=false	
+		has_left_center=false
 	
 
 func activate_selected():
@@ -410,29 +431,29 @@ func activate_selected():
 	was selected
 	"""
 	if selected != -1 and menu_items[selected].id is Popup:
-		open_submenu(menu_items[selected].id, selected)	
-	else:	
-		close_menu()	
-		signal_id()	
+		open_submenu(menu_items[selected].id, selected)
+	else:
+		close_menu()
+		signal_id()
 
 		
-func _connect_submenu_signals(submenu):	
+func _connect_submenu_signals(submenu):
 	submenu.connect("about_to_show", submenu, "_about_to_show")
-	submenu.connect("visibility_changed", submenu, "_on_visibility_changed")	
+	submenu.connect("visibility_changed", submenu, "_on_visibility_changed")
 	submenu.connect("item_selected", self, "_on_submenu_item_selected")
 	submenu.connect("item_hovered", self, "_on_submenu_item_hovered")
 	submenu.connect("cancelled", self, "_on_submenu_cancelled")
 
-func _disconnect_submenu_signals(submenu):	
+func _disconnect_submenu_signals(submenu):
 	submenu.disconnect("about_to_show", submenu, "_about_to_show")
-	submenu.disconnect("visibility_changed", submenu, "_on_visibility_changed")	
+	submenu.disconnect("visibility_changed", submenu, "_on_visibility_changed")
 	submenu.disconnect("item_selected", self, "_on_submenu_item_selected")
 	submenu.disconnect("item_hovered", self, "_on_submenu_item_hovered")
 	submenu.disconnect("cancelled", self, "_on_submenu_cancelled")
 
 
 func _clear_item_icons():
-	var p = $ItemIcons	
+	var p = $ItemIcons
 	if not p:
 		return
 	for node in p.get_children():
@@ -441,7 +462,7 @@ func _clear_item_icons():
 	_item_children_present = false
 
 
-func _register_menu_child_nodes():	
+func _register_menu_child_nodes():
 	for item in get_children():
 		if item.name == ITEM_ICONS_NAME:
 			continue
@@ -452,12 +473,12 @@ func _register_menu_child_nodes():
 
 func _create_item_icons():
 	if not ready:
-		return	
+		return
 	_clear_item_icons()
 	var n = menu_items.size()
 	if n == 0:
 		return
-	var start_angle = center_angle - item_angle * (n >> 1) 	
+	var start_angle = center_angle - item_angle * (n >> 1)
 	var half_angle
 	if n % 2 == 0:
 		half_angle = item_angle/2.0
@@ -466,7 +487,7 @@ func _create_item_icons():
 		
 	var r = get_icon_radius()
 			
-	var coords = Draw.calc_ring_segment_centers(r, n, 
+	var coords = Draw.calc_ring_segment_centers(r, n,
 		start_angle+half_angle, start_angle+half_angle+n*item_angle, center_offset)
 	for i in range(n):
 		var item = menu_items[i]
@@ -491,21 +512,21 @@ func _update_item_icons():
 	
 	# a heuristic - hide icons when they tend to outgrow their segment
 	if item_angle < 0.01 or r*(item_angle/2*PI) < width * icon_scale:
-		$ItemIcons.hide()		
+		$ItemIcons.hide()
 	else:
-		$ItemIcons.show()		
+		$ItemIcons.show()
 		
-	var coords = Draw.calc_ring_segment_centers(r, n, 
+	var coords = Draw.calc_ring_segment_centers(r, n,
 		start_angle, start_angle+n*item_angle, center_offset)
 	var i = 0
 	var ni = 0
-	var item_nodes = $ItemIcons.get_children()	
-	while i < n:		
-		var item = menu_items[i]		
-		if item != null:			
+	var item_nodes = $ItemIcons.get_children()
+	while i < n:
+		var item = menu_items[i]
+		if item != null:
 			var sprite = item_nodes[ni]
 			ni += 1
-			sprite.position = coords[i]			
+			sprite.position = coords[i]
 			sprite.scale = Vector2(icon_scale, icon_scale)
 			sprite.modulate = _get_color("Icon Modulation")
 		i=i+1
@@ -524,7 +545,7 @@ func get_inner_outer():
 	
 	if selector_position == Position.outside:
 		var w = max(drw, _get_constant("Selector Segment Width"))
-		inner = radius - w - width 
+		inner = radius - w - width
 		outer = radius - w
 	else:
 		inner = radius - drw - width
@@ -542,7 +563,7 @@ func get_total_ring_width():
 		if decorator_ring_position == Position.off:
 			return width
 		else:
-			return width+max(sw, dw) 
+			return width+max(sw, dw)
 	elif decorator_ring_position == Position.off:
 		return width+sw
 	elif selector_position == Position.off:
@@ -581,17 +602,17 @@ func _get_constant(name):
 func _clear_items():
 	var n = $ItemIcons
 	for node in n.get_children():
-		n.remove_child(node)	
+		n.remove_child(node)
 		node.queue_free()
 	
 
 func get_itemindex_from_vector(v: Vector2):
 	"""
-	Given a vector that originates in the center of the radial menu, 
+	Given a vector that originates in the center of the radial menu,
 	this will return the index of the menu item that lies along that
 	vector.
 	"""
-	var n = menu_items.size()	
+	var n = menu_items.size()
 	var start_angle = center_angle - item_angle * n / 2.0
 	var end_angle = start_angle + n * item_angle
 	
@@ -599,8 +620,8 @@ func get_itemindex_from_vector(v: Vector2):
 	if angle < 0:
 		angle = -angle
 	else:
-		angle = 2*PI-angle	
-	var section = end_angle - start_angle  # wrap around bug?	
+		angle = 2*PI-angle
+	var section = end_angle - start_angle  # wrap around bug?
 
 	var idx = int(fmod(angle/section, n)*n)
 	if idx >= n:
@@ -626,7 +647,7 @@ func open_menu(center_position: Vector2):
 	"""
 			
 	rect_position.x = center_position.x - center_offset.x
-	rect_position.y = center_position.y - center_offset.y	
+	rect_position.y = center_position.y - center_offset.y
 	item_angle = circle_coverage*2*PI/menu_items.size()
 	_calc_new_geometry()
 	popup()
@@ -634,8 +655,10 @@ func open_menu(center_position: Vector2):
 	
 
 func close_menu():
+	if selected == -1:
+		return
 	if state != MenuState.open:
-		return	
+		return
 	has_left_center = false
 	if not show_animation:
 		state = MenuState.closed
@@ -644,20 +667,20 @@ func close_menu():
 		is_submenu = false
 	else:
 		state = MenuState.closing
-		orig_item_angle = item_angle	
+		orig_item_angle = item_angle
 		$Tween.interpolate_property(self, "item_angle", item_angle, 0.01, animation_speed_factor, Tween.TRANS_SINE, Tween.EASE_IN)
-		$Tween.start()				
+		$Tween.start()
 
-func open_submenu(submenu, idx):	
+func open_submenu(submenu, idx):
 	active_submenu_idx = idx
 	update()
 	
 	var ring_width = submenu.get_total_ring_width()
 	
 	submenu.decorator_ring_position = decorator_ring_position
-	submenu.center_angle = idx * item_angle - PI + center_angle + item_angle/2.0	
+	submenu.center_angle = idx * item_angle - PI + center_angle + item_angle/2.0
 	submenu.radius = radius + ring_width
-	submenu.is_submenu = true		
+	submenu.is_submenu = true
 	submenu.rect_position = moved_to_position - submenu.center_offset
 		
 	get_parent().add_child(submenu)
@@ -672,8 +695,8 @@ func open_submenu(submenu, idx):
 	if show_animation:
 		state = MenuState.moving
 		$Tween.interpolate_property(self, "rect_position", rect_position, rect_position+move, animation_speed_factor, Tween.TRANS_SINE, Tween.EASE_IN)
-		$Tween.start()		
-	else: 
+		$Tween.start()
+	else:
 		moved_to_position += move
 		rect_position = moved_to_position - center_offset
 		update()
@@ -696,11 +719,11 @@ func calc_move_to_fit(submenu):
 		elif sub_rect.position.y < 0:
 			dy = -sub_rect.position.y
 		return Vector2(dx, dy)
-	else: 
+	else:
 		return null
 
 
-func _on_Tween_tween_all_completed():	
+func _on_Tween_tween_all_completed():
 	if state == MenuState.closing:
 		state = MenuState.closed
 		hide()
@@ -714,7 +737,7 @@ func _on_Tween_tween_all_completed():
 		state = MenuState.open
 		item_angle = circle_coverage*2*PI/menu_items.size()
 		_calc_new_geometry()
-		update()	
+		update()
 	elif state == MenuState.moving:
 		state = MenuState.open
 		moved_to_position = rect_position + center_offset
@@ -752,8 +775,8 @@ func add_icon_item(texture : Texture, title: String, id):
 	
 	:param texture: The texture to use for the icon
 	:param title: A short title/label for the item
-	:param id: A unique id. If it is a RadialMenu object, 
-				   it will be treated as a submenu.
+	:param id: A unique id. If it is a RadialMenu object,
+		it will be treated as a submenu.
 	"""
 	var entry = { 'texture': texture, 'title': title, 'id': id}
 	menu_items.push_back(entry)
@@ -807,8 +830,8 @@ func set_item_icon(idx: int, texture: Texture):
 
 func _about_to_show():
 	selected = -1
-	msecs_at_opened = OS.get_ticks_msec()	
-	opened_at_position = Vector2(margin_left + center_offset.x, margin_top + center_offset.y)	
+	msecs_at_opened = OS.get_ticks_msec()
+	opened_at_position = Vector2(margin_left + center_offset.x, margin_top + center_offset.y)
 	if show_animation:
 		orig_item_angle = item_angle
 		item_angle = 0.01
@@ -827,11 +850,11 @@ func _on_visibility_changed():
 		state = MenuState.open
 
 
-func _on_submenu_item_selected(id, position):	
+func _on_submenu_item_selected(id, position):
 	var submenu = get_open_submenu()
-	_disconnect_submenu_signals(submenu)	
+	_disconnect_submenu_signals(submenu)
 	active_submenu_idx = -1
-	close_menu()	
+	close_menu()
 	emit_signal("item_selected", id, opened_at_position)
 
 
@@ -841,10 +864,10 @@ func _on_submenu_item_hovered(_item):
 	
 func _on_submenu_cancelled():
 	var submenu = get_open_submenu()
-	_disconnect_submenu_signals(submenu)		
+	_disconnect_submenu_signals(submenu)
 	set_selected_item(get_selected_by_mouse())
 	if selected == -1 or selected == active_submenu_idx:
-		get_tree().set_input_as_handled()	
+		get_tree().set_input_as_handled()
 	active_submenu_idx = -1
 	update()
 	

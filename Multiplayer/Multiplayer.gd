@@ -1,21 +1,74 @@
 extends Node
 
 
-var scissors := 1
-var stone := 2
-var paper := 3
-var lizard := 4
-var spock := 5
+## DEPENDENCIES ##
 
-onready var a_player_1 = get_node("AnimationPlayer")
-onready var a_player_2 = get_node("AnimationPlayer2")
+onready var scissors_hand_scene: PackedScene = preload("res://Hands/Scissors.tscn")
+onready var lizard_hand_scene: PackedScene = preload("res://Hands/Lizard.tscn")
+onready var paper_hand_scene: PackedScene = preload("res://Hands/Paper.tscn")
+onready var spock_hand_scene: PackedScene = preload("res://Hands/Spock.tscn")
+onready var stone_hand_scene: PackedScene = preload("res://Hands/Stone.tscn")
+onready var unknown_hand_scene: PackedScene = preload("res://Hands/Unknown.tscn")
+onready var confetti_particle_scene: PackedScene = preload("res://Effects/ConfettiParticles.tscn")
 
-var enemy_choice
-var player_choice
-var player_win_counter :=0
-var enemy_loose_counter :=0
-var enemy_win_counter :=0
-var player_loose_counter :=0
+const SCISSORS_ICON: Texture = preload("res://assets/hands/Scissors.png")
+const LIZARD_ICON: Texture = preload("res://assets/hands/Lizard.png")
+const PAPER_ICON: Texture = preload("res://assets/hands/Paper.png")
+const SPOCK_ICON: Texture = preload("res://assets/hands/Spok.png")
+const STONE_ICON: Texture = preload("res://assets/hands/Stone.png")
+const UNKNOWN_ICON: Texture =preload("res://assets/hands/Fragezeichen.png")
+
+onready var player_hand_menu: Popup = $PlayerHandMenu
+onready var waiting_for_player_label: Label = $WaitingforPlayerLabel
+onready var you_win_label: Label = $YouWinLabel
+onready var you_loose_label: Label = $YouLooseLabel
+onready var start_game_button: Button = $StartGameButton
+onready var next_round_button: Button = $NextRoundButton
+onready var player_count_ready_label: Label = $PlayerCountReadyLabel
+onready var player_names_hud: HBoxContainer = $PlayerNamesHUD
+onready var disposables: Node = $Disposables
+onready var reveal_timer: Timer = $RevealTimer
+onready var post_reveal_timer: Timer = $PostRevealTimer
+onready var player_1_name: Label = $PlayerNamesHUD/Player_1_Name
+onready var player_2_name: Label = $PlayerNamesHUD/Player_2_Name
+onready var new_game_button: Button = $NewGameButton
+
+
+
+
+var current_player_choice: int
+enum hands {
+	SCISSORS,
+	STONE,
+	PAPER,
+	LIZARD,
+	SPOCK
+}
+
+
+var current_enemy_choice: int
+var enemy_possibilities: Array = [
+	hands.SCISSORS,
+	hands.STONE,
+	hands.PAPER,
+	hands.LIZARD,
+	hands.SPOCK,
+]
+
+
+var player_hand_menu_items = [
+		{'texture': STONE_ICON, 'title': "Stone", 'id': hands.STONE}, 
+		{'texture': SCISSORS_ICON, 'title': "Scissors", 'id': hands.SCISSORS},
+		{'texture': PAPER_ICON, 'title': "Paper", 'id': hands.PAPER},
+		{'texture': LIZARD_ICON, 'title': "Lizard", 'id': hands.LIZARD},
+		{'texture': SPOCK_ICON, 'title': "Spock", 'id': hands.SPOCK},
+	]
+
+var player_hand_position: Vector2 = Vector2.ZERO
+var enemy_hand_position: Vector2 = Vector2.ZERO
+
+var player_win_counter: int = 0
+var enemy_win_counter: int = 0
 
 signal stalemate
 signal player_wins
@@ -23,313 +76,271 @@ signal enemy_wins
 signal end_game
 signal names_received
 
-func _ready():
+func _ready() -> void:
 	hide_ui()
-	$player_selection.hide()
-	$HBoxContainer/vs.hide()
-	$Start_game.hide()
-	connect("player_wins", self, "on_player_wins")
-	connect("enemy_wins", self, "on_enemy_wins")
-	connect("stalemate", self, "on_stalemate")
-	connect("end_game", self, "on_end_game")
-	$waitingforPlayerTimer.start()
-	connect("names_received", self, "setNames")
+	
+	waiting_for_player_label.show()
 
-func _on_waitingforPlayerTimer_timeout():
-	if Server.two_players == false:
-		Server.CheckTwoPlayers()
-	else:
-		get_player_names()
-		Server.two_players = false
-		$Waiting_for_Player.hide()
-		$waitingforPlayerTimer.stop()
-		$Start_game.show()
-		$HBoxContainer/vs.show()
-		print("name1: " + Server.player_name)
-		print("name2: " + Server.enemy_name)
-		
-		
-func get_player_names():
-	Server.GetPlayerNames(get_instance_id())
-		
-func setNames(player, enemy):
-	$HBoxContainer/Player_1_Name.text = player
-	$HBoxContainer/Player_2_Name.text = enemy
 	
-	
+	Signals.connect("player_wins", self, "_on_player_wins")
+	Signals.connect("bot_wins", self, "_on_bot_wins")
+	Signals.connect("draw", self, "_on_draw")
+	Signals.connect("game_over", self, "_on_game_over")
+
+	calculate_hand_positions()
+	set_up_player_hand_menu()
+#	connect("enemy_wins", self, "on_enemy_wins")
+#	connect("stalemate", self, "on_stalemate")
+#	connect("end_game", self, "on_end_game")
+
+	Server.send_player_requester(get_instance_id())
+	Server.send_player_ready_notice()
+
+
+
+func calculate_hand_positions() -> void:
+	player_hand_position = Vector2(get_viewport().size.x/4,get_viewport().size.y/2)
+	enemy_hand_position = Vector2(get_viewport().size.x * 3/4,get_viewport().size.y/2)
+
+
+func set_up_player_hand_menu() -> void:
+	player_hand_menu.menu_items = player_hand_menu_items
+
+
 func hide_ui():
-	$Hbox/Cntr1/LinkeFaust.hide()
-	$Hbox/Cntr2/RechteFaust.hide()
-	$Hbox/Cntr2/ESchere.hide()
-	$Hbox/Cntr2/EStein.hide()
-	$Hbox/Cntr2/EPapier.hide()
-	$Hbox/Cntr2/EEchse.hide()
-	$Hbox/Cntr2/ESpok.hide()
-	$Hbox/Cntr1/Schere.hide()
-	$Hbox/Cntr1/Stein.hide()
-	$Hbox/Cntr1/Papier.hide()
-	$Hbox/Cntr1/Echse.hide()
-	$Hbox/Cntr1/Spok.hide()
-	$Hbox/Cntr1/Fragezeichen1.hide()
-	$Hbox/Cntr2/Fragezeichen2.hide()
-	$Winner.hide()
-	$Winner2.hide()
-	$NextRound.hide()
-	$GameReadyLabel.hide()
+	you_win_label.hide()
+	you_loose_label.hide()
+	next_round_button.hide()
+	player_count_ready_label.hide()
+	player_names_hud.hide()
+	start_game_button.hide()
+	new_game_button.hide()
+
+
+func _on_PlayerHandMenu_item_selected(id, position) -> void:
+	current_player_choice = id
+	player_count_ready_label.show()
+	push_current_choice_to_the_server(current_player_choice)
+	#Server.send_player_ready_notice()
+
+
+func start_visualization() -> void:
+	player_count_ready_label.hide()
 	
+	instance_player_hand_scene()
+	instance_enemy_hand_scene()
+	reveal_timer.start()
 
+
+func instance_player_hand_scene() -> void:
+	var current_player_hand_scene: PackedScene = find_player_hand_scene()
+	var new_hand = current_player_hand_scene.instance()
+	new_hand.position = player_hand_position
+	disposables.add_child(new_hand)
+	new_hand.set_current_owner("PLAYER")
+
+
+func instance_enemy_hand_scene() -> void:
+	var new_hand: Node2D = unknown_hand_scene.instance()
+	new_hand.position = enemy_hand_position
+	disposables.add_child(new_hand)
+	new_hand.set_current_owner("BOT")
+
+
+func find_player_hand_scene() -> PackedScene:
+	if current_player_choice == hands.SCISSORS:
+		return scissors_hand_scene
+	elif current_player_choice == hands.LIZARD:
+		return lizard_hand_scene
+	elif current_player_choice == hands.PAPER:
+		return paper_hand_scene
+	elif current_player_choice == hands.STONE:
+		return stone_hand_scene
+	else: 
+		return spock_hand_scene
+
+
+func _on_RevealTimer_timeout() -> void:
+	reveal_timer.stop()
+	var bot_hand_texture_info: Array = find_bot_texture()
+	instance_bot_sprite(bot_hand_texture_info)
+	post_reveal_timer.start()
+
+
+func find_bot_texture() -> Array:
+	if current_enemy_choice == hands.SCISSORS:
+		return [SCISSORS_ICON, false]
+	elif current_enemy_choice == hands.LIZARD:
+		return [LIZARD_ICON, true]
+	elif current_enemy_choice == hands.PAPER:
+		return [PAPER_ICON, false]
+	elif current_enemy_choice == hands.STONE:
+		return [STONE_ICON, false]
+	else: 
+		return [SPOCK_ICON, false]
+
+
+func instance_bot_sprite(bot_hand_texture_info: Array) -> void:
+	var new_sprite: Sprite = Sprite.new()
+	new_sprite.texture = bot_hand_texture_info[0]
+	new_sprite.position = enemy_hand_position
+	disposables.add_child(new_sprite)
+	if !bot_hand_texture_info[1]:
+		new_sprite.flip_h = true
+
+
+func _on_PostRevealTimer_timeout() -> void:
+	post_reveal_timer.stop()
+	check_who_won()
+
+
+func check_who_won() -> void:
+	if current_player_choice == hands.SCISSORS:
+		if current_enemy_choice == hands.SCISSORS:
+			Signals.emit_signal("draw")
+		elif current_enemy_choice == hands.STONE or current_enemy_choice == hands.SPOCK:
+			Signals.emit_signal("bot_wins")
+		elif current_enemy_choice == hands.PAPER or current_enemy_choice == hands.LIZARD:
+			Signals.emit_signal("player_wins")
 	
-func winner_determination():
-	if player_choice == 1:
-		if enemy_choice ==1:
-			emit_signal("stalemate") 
-			print("Stalemate")
-		if enemy_choice == 2 or enemy_choice == 5:
-			emit_signal("enemy_wins")
-			print("enemy wins")
-		if enemy_choice == 3 or enemy_choice == 4:
-			emit_signal("player_wins")
-			print("player wins")
-	if player_choice == 2:
-		if enemy_choice == 1 or enemy_choice == 4:
-			emit_signal("player_wins")
-		if enemy_choice == 2:
-			emit_signal("stalemate")
-		if enemy_choice == 3 or enemy_choice == 5:
-			emit_signal("enemy_wins")
-	if player_choice == 3 :
-		if enemy_choice == 2 or enemy_choice == 5:
-			emit_signal("player_wins")
-		if enemy_choice == 1 or enemy_choice == 4:
-			emit_signal("enemy_wins")
-		if enemy_choice == 3:
-			emit_signal("stalemate")
-	if player_choice == 4:
-		if enemy_choice == 3 or enemy_choice == 5:
-			emit_signal("player_wins")
-		if enemy_choice == 1 or enemy_choice == 2:
-			emit_signal("enemy_wins")
-		if enemy_choice == 4:
-			emit_signal("stalemate")
-	if player_choice == 5:
-		if enemy_choice == 1 or enemy_choice == 2:
-			emit_signal("player_wins")
-		if enemy_choice == 3 or enemy_choice == 4:
-			emit_signal("enemy_wins")
-		if enemy_choice == 5:
-			emit_signal("stalemate")
-			
-
-
-
-func _on_ASchere_pressed():
-	player_choice = 1
-	start_after_selection()
-
-func _on_AStein_pressed():
-	player_choice = 2
-	start_after_selection()
-
-func _on_APapier_pressed():
-	player_choice = 3
-	start_after_selection()
-
-func _on_AEchse_pressed():
-	player_choice = 4
-	start_after_selection()
-
-func _on_ASpok_pressed():
-	player_choice = 5
-	start_after_selection()
-
-func start_after_selection():
-	$player_selection.hide()
-	Server.SendPlayerChoice(player_choice)
-	$Checktimer.start()
-	#Timeranimation
-	$Hbox/Cntr1/Fragezeichen1.show()
-	$Hbox/Cntr2/Fragezeichen2.show()
+	if current_player_choice == hands.STONE:
+		if current_enemy_choice == hands.SCISSORS or current_enemy_choice == hands.LIZARD:
+			Signals.emit_signal("player_wins")
+		elif current_enemy_choice == hands.STONE:
+			Signals.emit_signal("draw")
+		elif current_enemy_choice == hands.PAPER or current_enemy_choice == hands.SPOCK:
+			Signals.emit_signal("bot_wins")
 	
-func _on_Checktimer_timeout():
-	if Server.enemy_ready == true:
-			call_enemy_choice()
-			$Revealtimer.start()
-			print("ready")
-			$Checktimer.stop()
-			Server.enemy_ready = false
+	if current_player_choice == hands.PAPER :
+		if current_enemy_choice == hands.STONE or current_enemy_choice == hands.SPOCK:
+			Signals.emit_signal("player_wins")
+		elif current_enemy_choice == hands.SCISSORS or current_enemy_choice == hands.LIZARD:
+			Signals.emit_signal("bot_wins")
+		elif current_enemy_choice == hands.PAPER:
+			Signals.emit_signal("draw")
+	
+	if current_player_choice == hands.LIZARD:
+		if current_enemy_choice == hands.PAPER or current_enemy_choice == hands.SPOCK:
+			Signals.emit_signal("player_wins")
+		elif current_enemy_choice == hands.SCISSORS or current_enemy_choice == hands.STONE:
+			Signals.emit_signal("bot_wins")
+		elif current_enemy_choice == hands.LIZARD:
+			Signals.emit_signal("draw")
+	
+	if current_player_choice == hands.SPOCK:
+		if current_enemy_choice == hands.SCISSORS or current_enemy_choice == hands.STONE:
+			Signals.emit_signal("player_wins")
+		elif current_enemy_choice == hands.PAPER or current_enemy_choice == hands.LIZARD:
+			Signals.emit_signal("bot_wins")
+		elif current_enemy_choice == hands.SPOCK:
+			Signals.emit_signal("draw")
 
-	
-func _on_Revealtimer_timeout():
-	$Hbox/Cntr1/Fragezeichen1.hide()
-	$Hbox/Cntr2/Fragezeichen2.hide()
-	$Hbox/Cntr1/LinkeFaust.show()
-	$Hbox/Cntr2/RechteFaust.show()
-	a_player_1.play("Schüttelbewegung Links")
-	a_player_2.play("Schüttelbewegung Rechts")
-	yield(a_player_1, "animation_finished")
-	show_player_selection()
-	yield(a_player_2, "animation_finished")
-	show_enemy_choice()
-	
-func show_player_selection():
-	$Hbox/Cntr1/LinkeFaust.hide()
-	if player_choice == 1:
-		$Hbox/Cntr1/Schere.show()
-		#animation rammen
-	if player_choice == 2:
-		$Hbox/Cntr1/Stein.show()
-		#animation rammen
-	if player_choice == 3:
-		$Hbox/Cntr1/Papier.show()
-		#animation rammen
-	if player_choice == 4:
-		$Hbox/Cntr1/Echse.show()
-		#animation rammen
-	if player_choice == 5:
-		$Hbox/Cntr1/Spok.show()
-		#animation rammen
-		
-func show_enemy_choice():
-	$Hbox/Cntr2/RechteFaust.hide()
-	if enemy_choice == 1:
-		$Hbox/Cntr2/ESchere.show()
-		#animation rammen
-		winner_determination()
-	if enemy_choice == 2:
-		$Hbox/Cntr2/EStein.show()
-		#animation rammen
-		winner_determination()
-	if enemy_choice == 3:
-		$Hbox/Cntr2/EPapier.show()
-		#animation rammen
-		winner_determination()
-	if enemy_choice == 4:
-		$Hbox/Cntr2/EEchse.show()
-		#animation rammen
-		winner_determination()
-	if enemy_choice == 5:
-		$Hbox/Cntr2/ESpok.show()
-		#animation rammen
-		winner_determination()
 
-func on_player_wins():
-	yield(get_tree().create_timer(1), "timeout")
-	add_loose_enemy()
-	add_win_player()
-
-	
-	
-func add_win_player():
-	var position = get_node("Control/1a/2a/Playerpoints")
-	var point = TextureRect.new()
-	point.set_texture(load("res://won_point.png"))
-	position.add_child(point, player_win_counter)
+func _on_player_wins() -> void:
+	instance_confetti(Vector2(get_viewport().size.x/4, 0))
 	player_win_counter += 1
-	emit_signal("end_game")
-	
-func add_loose_enemy():
-	var position = get_node("Control/1a/2b/Enemypoints")
-	var point = TextureRect.new()
-	point.set_texture(load("res://lost_point.png"))
-	position.add_child(point, enemy_loose_counter)
-	enemy_loose_counter += 1
-	
-func on_enemy_wins():
-	yield(get_tree().create_timer(1), "timeout")
-	add_player_loose()
-	add_enemy_win()
+	check_game_end_condition()
 
-	
 
-func add_player_loose():
-	var position = get_node("Control/1a/2a/Playerpoints")
-	var point = TextureRect.new()
-	point.set_texture(load("res://lost_point.png"))
-	position.add_child(point, player_loose_counter)
-	player_loose_counter += 1
-	
-func add_enemy_win():
-	var position = get_node("Control/1a/2b/Enemypoints")
-	var point = TextureRect.new()
-	point.set_texture(load("res://won_point.png"))
-	position.add_child(point, enemy_win_counter)
+func _on_bot_wins() -> void:
+	instance_confetti(Vector2(get_viewport().size.x * 3/4, 0))
 	enemy_win_counter += 1
-	emit_signal("end_game")
+	check_game_end_condition()
+
+
+func _on_draw() -> void:
+	next_round_button.show()
+
+
+func instance_confetti(pos: Vector2) -> void:
+	var new_confetti: Particles2D = confetti_particle_scene.instance()
+	new_confetti.position = pos
+	disposables.add_child(new_confetti)
+
+
+func check_game_end_condition() -> void:
+	if player_win_counter == 3 or enemy_win_counter == 3:
+		if player_win_counter == 3:
+			you_win_label.show()
+		else:
+			you_loose_label.show()
+		Server.send_game_finished_notice()
+		player_win_counter = 0
+		enemy_win_counter = 0
+		new_game_button.show()
+	else:
+		next_round_button.show()
+
+
+func _on_NextRoundButton_pressed() -> void:
+	next_round_button.hide()
+	clear_disposables()
+	player_count_ready_label.show()
+	Server.send_player_ready_notice()
+
+
+func _on_NewGameButton_pressed() -> void:
+	new_game_button.hide()
+	you_win_label.hide()
+	you_loose_label.hide()
+	clear_disposables()
+	player_count_ready_label.show()
+	Signals.emit_signal("new_round_initiated")
+	Server.send_player_ready_notice()
+
+
+func clear_disposables() -> void:
+	for child in disposables.get_children():
+		child.queue_free()
+
+
+func _on_StartGameButton_pressed() -> void:
+	Server.send_player_ready_notice()
+	player_count_ready_label.show()
+
+
+################################################################################
+## SERVER COMMUNICATION ##
+
+
+func set_both_player_names(player_name: String, enemy_name: String) -> void:
+	player_1_name.text = player_name
+	player_2_name.text = enemy_name
+	waiting_for_player_label.hide()
 	
-func on_stalemate():
-	$NextRound.show()
+	start_game_button.show()
 
 
-func _on_Start_game_pressed():
-	Server.PlayerReadyGameStart()
-	$GameReadyTimer.start()
-	$GameReadyLabel.show()
-
-
-func _on_GameReadyTimer_timeout():
-	if Server.gameready == true:
-		start_game()
-		Server.gameready = false
-		$GameReadyTimer.stop()
-		$GameReadyLabel.hide()
-	
-func start_game():
-	$player_selection.show()
+func start_game() -> void:
+	player_hand_menu.open_menu(player_hand_position)
 	hide_ui()
-	$Start_game.hide()
-	$NextRound.hide()
-	
-	
-func call_enemy_choice():
-	Server.GetEnemyChoice(get_instance_id())
-	
-func SetEnemyChoice(choice):
-	enemy_choice = choice
-	print(enemy_choice)
-	
-	
-func on_end_game():
-	if !player_win_counter == 3 or !player_loose_counter == 3:
-		yield(get_tree().create_timer(1), "timeout")
-		$NextRound.show()
-	if player_win_counter == 3:
-		hide_ui()
-		$Winner.show()
-		reset()
-	if enemy_win_counter == 3:
-		hide_ui()
-		$Winner2.show()
-		reset()
-		
-func reset():
-	yield(get_tree().create_timer(5), "timeout")
-	delete_points()
-	player_loose_counter = 0
-	player_win_counter = 0
-	enemy_loose_counter = 0
-	enemy_win_counter = 0
-	$Start_game.show()
-	$NextRound.hide()
-	
-func delete_points():
-	var playerpoints = get_node("Control/1a/2a/Playerpoints")
-	for i in playerpoints.get_children():
-		playerpoints.remove_child(i)
-		i.queue_free()
-	var enemypoints = get_node("Control/1a/2b/Enemypoints")
-	for i in enemypoints.get_children():
-		playerpoints.remove_child(i)
-		i.queue_free()
 
 
-func _on_NextRound_pressed():
-	Server.PlayerReadyGameStart()
-	$GameReadyTimer.start()
-	$GameReadyLabel.show()
+func push_current_choice_to_the_server(choice: int) -> void:
+	Server.push_player_choice(choice)
+	Server.send_player_ready_notice()
 
 
+func set_enemy_choice(enemy_choice: int) -> void:
+	current_enemy_choice = enemy_choice
+	start_visualization()
 
 
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_cancel"):
+		pass
+
+
+#var mouse_inside_player_hand_menu: bool = false
+#
+#func _on_PlayerHandMenu_mouse_entered() -> void:
+#	mouse_inside_player_hand_menu = true
+##	player_hand_menu.set_m = MOUSE_FILTER_STOP
+#
+#
+#func _on_PlayerHandMenu_mouse_exited() -> void:
+#	mouse_inside_player_hand_menu = false
+##	player_hand_menu.mouse_filter = MOUSE_FILTER_IGNORE
 
 
 
